@@ -1,3 +1,4 @@
+-- current user database schema
 CREATE DATABASE users
 
 CREATE TABLE userdata(

@@ -8,6 +8,7 @@ const JWT_SECRET = "{8367E87C-B794-4A04-89DD-15FE7FDBFF78}";
 //----------------login a user---------------//
 
 module.exports = (channel, msg) => {
+  // get user data from the queue
   const content = JSON.parse(msg.content.toString());
   const { userid } = content;
   pool.query(
@@ -24,6 +25,7 @@ module.exports = (channel, msg) => {
   );
 };
 
+// function to very if password is correct
 async function checkSaltPasswordAndUpdateToken(
   channel,
   msg,
@@ -51,6 +53,7 @@ async function checkSaltPasswordAndUpdateToken(
           (err, results) => {
             if (err) throw err;
             else {
+              // send the result to the queue
               const r = {
                 success: "Logged in successfully!",
                 tokenid: token,
@@ -67,6 +70,7 @@ async function checkSaltPasswordAndUpdateToken(
           }
         );
       } else {
+        // send the result to the queue
         const r = { error: "Incorrect username or password" };
         channel.sendToQueue(
           msg.properties.replyTo,

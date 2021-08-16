@@ -43,9 +43,10 @@ amqp.connect("amqp://localhost", function (error0, connection) {
     channel.prefetch(1);
     console.log(" [x] Awaiting RPC requests");
     channel.consume(queue, function reply(msg) {
-      //console.log(" [x] Received %s", JSON.parse(msg.content.toString()));
+      console.log(" [x] Received %s", JSON.parse(msg.content.toString()));
       msg1 = JSON.parse(msg.content.toString());
       const route = msg1.route;
+      // serving functions as per the requests
       switch (route) {
         case "register":
           register(channel, msg);

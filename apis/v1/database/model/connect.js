@@ -1,3 +1,4 @@
+// connection to the PostgresSQL
 const Pool = require("pg").Pool;
 module.exports = new Pool({
   user: "frugal",
