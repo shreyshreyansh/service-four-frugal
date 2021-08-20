@@ -18,8 +18,25 @@ module.exports = (channel, msg) => {
       if (error) {
         throw error;
       } else {
-        const saltedPassword = results.rows[0].password;
-        checkSaltPasswordAndUpdateToken(channel, msg, saltedPassword, results);
+        if (results.rows.length == 0) {
+          const r = { error: "Incorrect userid" };
+          channel.sendToQueue(
+            msg.properties.replyTo,
+            Buffer.from(JSON.stringify(r)),
+            {
+              correlationId: msg.properties.correlationId,
+            }
+          );
+          channel.ack(msg);
+        } else {
+          const saltedPassword = results.rows[0].password;
+          checkSaltPasswordAndUpdateToken(
+            channel,
+            msg,
+            saltedPassword,
+            results
+          );
+        }
       }
     }
   );

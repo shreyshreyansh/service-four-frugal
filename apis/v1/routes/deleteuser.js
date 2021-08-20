@@ -1,6 +1,6 @@
 const pool = require("../database/model/connect");
 const req = require("../functions/request");
-const authorization = ["admin"];
+const authorization = ["adminClient", "adminFlip"];
 module.exports = (channel, msg) => req(channel, msg, deleteuser);
 
 const deleteuser = (channel, msg, jsondata) => {
@@ -9,9 +9,10 @@ const deleteuser = (channel, msg, jsondata) => {
   if (authorization.includes(jsondata.role)) {
     const id = content.userid;
     // delete the particular user from the db
+    var role = jsondata.role === "adminClient" ? "userClient" : "userFlip";
     pool.query(
-      "DELETE FROM userdata WHERE userid = $1",
-      [id],
+      "DELETE FROM userdata where userid = $1 and role = $2",
+      [id, role],
       (err, results) => {
         if (err) {
           const r = { error: err };
