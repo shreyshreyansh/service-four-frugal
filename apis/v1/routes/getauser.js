@@ -1,6 +1,6 @@
 const pool = require("../database/model/connect");
 const req = require("../functions/request");
-const authorization = ["admin"];
+const authorization = ["adminClient", "adminFlip"];
 module.exports = (channel, msg) => req(channel, msg, getauser);
 
 const getauser = (channel, msg, jsondata) => {
@@ -11,9 +11,11 @@ const getauser = (channel, msg, jsondata) => {
     jsondata.userid === content.userid
   ) {
     // get a particular user from the user table
+    var role = jsondata.role === "adminClient" ? "userClient" : "userFlip";
+    //console.log(role, jsondata.role);
     pool.query(
-      "SELECT * FROM userdata where userid = $1",
-      [content.userid],
+      "SELECT * FROM userdata where userid = $1 and role = $2",
+      [content.userid, role],
       (err, result) => {
         if (err) {
           // send the result to the queue
