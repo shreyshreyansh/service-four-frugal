@@ -9,7 +9,7 @@ CREATE TABLE userdata(
     PRIMARY KEY(userid)
 );
 
-INSERT INTO userdata(userid, username, password, role) VALUES('QYRTEGS12', 'Suyog', '12345', 'superadmin');
+INSERT INTO userdata(userid, username, password, role) VALUES('QYRTEGS12', 'Suyog', '12345', 'superAdmin');
 
 CREATE TABLE tokendata(
     userid VARCHAR(255) NOT NULL,

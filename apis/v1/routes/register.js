@@ -1,16 +1,19 @@
 const pool = require("../database/model/connect");
 const req = require("../functions/request");
 const bcrypt = require("bcrypt");
-const authorization = ["adminClient", "adminGeneral"];
+const authorization = ["adminClient", "adminFlip"];
 
 module.exports = (channel, msg) => req(channel, msg, registerUser);
 
 const registerUser = (channel, msg, jsondata) => {
   const content = JSON.parse(msg.content.toString());
   // checking the authorization of the user
+  console.log(jsondata.role);
+  console.log(content.role);
   if (
     (jsondata.role === "superAdmin" && authorization.includes(content.role)) ||
-    (authorization.includes(jsondata.role) && content.role === "user")
+    (jsondata.role === "adminClient" && content.role == "userClient") ||
+    (jsondata.role === "adminFlip" && content.role == "userFlip")
   ) {
     const sql = "SELECT userid FROM userdata WHERE userid = $1";
     pool.query(sql, [content.userid], (err, result) => {
