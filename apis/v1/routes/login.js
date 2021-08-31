@@ -64,28 +64,19 @@ async function checkSaltPasswordAndUpdateToken(
           algorithm: "HS256",
           expiresIn: 60 * 5,
         });
-        pool.query(
-          "update tokendata set tokenid = $1 where userid = $2",
-          [token, results.rows[0].userid],
-          (err, results) => {
-            if (err) throw err;
-            else {
-              // send the result to the queue
-              const r = {
-                success: "Logged in successfully!",
-                tokenid: token,
-              };
-              channel.sendToQueue(
-                msg.properties.replyTo,
-                Buffer.from(JSON.stringify(r)),
-                {
-                  correlationId: msg.properties.correlationId,
-                }
-              );
-              channel.ack(msg);
-            }
+        // send the result to the queue
+        const r = {
+          success: "Logged in successfully!",
+          tokenid: token,
+        };
+        channel.sendToQueue(
+          msg.properties.replyTo,
+          Buffer.from(JSON.stringify(r)),
+          {
+            correlationId: msg.properties.correlationId,
           }
         );
+        channel.ack(msg);
       } else {
         // send the result to the queue
         const r = { error: "Incorrect username or password" };

@@ -1,16 +1,19 @@
 const pool = require("../database/model/connect");
 const req = require("../functions/request");
 const authorization = ["adminClient", "adminFlip"];
-module.exports = (channel, msg) => req(channel, msg, getalltokens);
+module.exports = (channel, msg) => req(channel, msg, getuserdevices);
 
-const getalltokens = (channel, msg, jsondata) => {
+const getuserdevices = (channel, msg, jsondata) => {
+  const content = JSON.parse(msg.content.toString());
   // checking the authorization of the user
-  if (authorization.includes(jsondata.role)) {
-    // getting all tokens from the token table
-    var role = jsondata.role === "adminClient" ? "userClient" : "userFlip";
+  if (
+    authorization.includes(jsondata.role) ||
+    jsondata.userid === content.userid
+  ) {
+    // get all the users from the db
     pool.query(
-      "SELECT * FROM tokendata where role = $1",
-      [role],
+      "SELECT * FROM devicedata where userid = $1",
+      [content.userid],
       (err, result) => {
         if (err) {
           // send the result to the queue

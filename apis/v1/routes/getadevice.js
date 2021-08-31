@@ -1,22 +1,23 @@
 const pool = require("../database/model/connect");
 const req = require("../functions/request");
 const authorization = ["adminClient", "adminFlip"];
-module.exports = (channel, msg) => req(channel, msg, deleteuser);
+module.exports = (channel, msg) => req(channel, msg, getadevice);
 
-const deleteuser = (channel, msg, jsondata) => {
+const getadevice = (channel, msg, jsondata) => {
   const content = JSON.parse(msg.content.toString());
   // checking the authorization of the user
-  if (authorization.includes(jsondata.role)) {
-    const id = content.userid;
-    // delete the particular user from the db
-    var role = jsondata.role === "adminClient" ? "userClient" : "userFlip";
+  if (
+    authorization.includes(jsondata.role) ||
+    jsondata.userid === content.userid
+  ) {
+    // get a particular device from the device table
     pool.query(
-      "DELETE FROM userdata where userid = $1 and role = $2",
-      [id, role],
-      (err, results) => {
+      "SELECT * FROM devicedata where deviceid = $1 and userid = $2",
+      [content.deviceID, content.userid],
+      (err, result) => {
         if (err) {
-          const r = { error: err };
           // send the result to the queue
+          const r = { error: err };
           channel.sendToQueue(
             msg.properties.replyTo,
             Buffer.from(JSON.stringify(r)),
@@ -26,8 +27,11 @@ const deleteuser = (channel, msg, jsondata) => {
           );
           channel.ack(msg);
         } else {
-          const r = { success: `User deleted with ID: ${id}` };
           // send the result to the queue
+          const r = {
+            count: Object.keys(result.rows).length,
+            result: result.rows,
+          };
           channel.sendToQueue(
             msg.properties.replyTo,
             Buffer.from(JSON.stringify(r)),
@@ -41,7 +45,7 @@ const deleteuser = (channel, msg, jsondata) => {
     );
   } else {
     // send the result to the queue
-    const r = { error: "admin access required" };
+    const r = { error: "admin access required or token invalid for the user" };
     channel.sendToQueue(
       msg.properties.replyTo,
       Buffer.from(JSON.stringify(r)),

@@ -3,13 +3,15 @@ const express = require("express");
 const bodyParser = require("body-parser");
 var amqp = require("amqplib/callback_api");
 //functions
-const register = require("./apis/v1/routes/register");
+const registeruser = require("./apis/v1/routes/registeruser");
+const registerdevice = require("./apis/v1/routes/registerdevice");
 const getallusers = require("./apis/v1/routes/getallusers");
 const getauser = require("./apis/v1/routes/getauser");
-const getalltokens = require("./apis/v1/routes/getalltokens");
-const getatoken = require("./apis/v1/routes/getatoken");
+const getadevice = require("./apis/v1/routes/getadevice");
 const login = require("./apis/v1/routes/login");
+const getuserdevices = require("./apis/v1/routes/getuserdevices");
 const deleteuser = require("./apis/v1/routes/deleteuser");
+const deletedevice = require("./apis/v1/routes/deletedevice");
 const istokenvalid = require("./apis/v1/routes/istokenvalid");
 
 //express app
@@ -48,8 +50,11 @@ amqp.connect("amqp://localhost", function (error0, connection) {
       const route = msg1.route;
       // serving functions as per the requests
       switch (route) {
-        case "register":
-          register(channel, msg);
+        case "registeruser":
+          registeruser(channel, msg);
+          break;
+        case "registerdevice":
+          registerdevice(channel, msg);
           break;
         case "login":
           login(channel, msg);
@@ -60,17 +65,20 @@ amqp.connect("amqp://localhost", function (error0, connection) {
         case "getauser":
           getauser(channel, msg);
           break;
-        case "getalltokens":
-          getalltokens(channel, msg);
+        case "getuserdevices":
+          getuserdevices(channel, msg);
           break;
-        case "getatoken":
-          getatoken(channel, msg);
+        case "getdevice":
+          getadevice(channel, msg);
           break;
         case "istokenvalid":
           istokenvalid(channel, msg);
           break;
         case "deleteuser":
           deleteuser(channel, msg);
+          break;
+        case "deletedevice":
+          deletedevice(channel, msg);
           break;
         default:
           console.log("Wrong Choice");
