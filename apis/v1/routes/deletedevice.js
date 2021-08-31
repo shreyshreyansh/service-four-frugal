@@ -1,17 +1,17 @@
 const pool = require("../database/model/connect");
 const req = require("../functions/request");
 const authorization = ["adminClient", "adminFlip"];
-module.exports = (channel, msg) => req(channel, msg, deleteuser);
+module.exports = (channel, msg) => req(channel, msg, deletedevice);
 
-const deleteuser = (channel, msg, jsondata) => {
+const deletedevice = (channel, msg, jsondata) => {
   const content = JSON.parse(msg.content.toString());
   // checking the authorization of the user
   if (authorization.includes(jsondata.role)) {
-    const id = content.userid;
+    const id = content.deviceID;
     // delete the particular user from the db
     var role = jsondata.role === "adminClient" ? "userClient" : "userFlip";
     pool.query(
-      "DELETE FROM userdata where userid = $1 and role = $2",
+      "DELETE FROM devicedata where deviceid = $1 and role = $2",
       [id, role],
       (err, results) => {
         if (err) {
@@ -26,7 +26,7 @@ const deleteuser = (channel, msg, jsondata) => {
           );
           channel.ack(msg);
         } else {
-          const r = { success: `User deleted with ID: ${id}` };
+          const r = { success: `Device deleted with ID: ${id}` };
           // send the result to the queue
           channel.sendToQueue(
             msg.properties.replyTo,

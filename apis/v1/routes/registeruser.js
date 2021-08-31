@@ -8,8 +8,6 @@ module.exports = (channel, msg) => req(channel, msg, registerUser);
 const registerUser = (channel, msg, jsondata) => {
   const content = JSON.parse(msg.content.toString());
   // checking the authorization of the user
-  console.log(jsondata.role);
-  console.log(content.role);
   if (
     (jsondata.role === "superAdmin" && authorization.includes(content.role)) ||
     (jsondata.role === "adminClient" && content.role == "userClient") ||
@@ -80,23 +78,6 @@ async function insertUserIntoUserdata(channel, msg, hash) {
     (err, results) => {
       if (err) throw err;
       else {
-        insetUserinTokendata(channel, msg);
-      }
-    }
-  );
-}
-
-async function insetUserinTokendata(channel, msg) {
-  // getting token info from the queue
-  const content = JSON.parse(msg.content.toString());
-  // inserting token info into the db
-  pool.query(
-    "INSERT INTO tokendata (userid, tokenid) values ($1,$2)",
-    [content.userid, null],
-    (err, results) => {
-      if (err) throw err;
-      else {
-        // send the result to the queue
         const r = { success: "User created successfully" };
         channel.sendToQueue(
           msg.properties.replyTo,
