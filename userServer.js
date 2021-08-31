@@ -6,8 +6,6 @@ var amqp = require("amqplib/callback_api");
 const register = require("./apis/v1/routes/register");
 const getallusers = require("./apis/v1/routes/getallusers");
 const getauser = require("./apis/v1/routes/getauser");
-const getalltokens = require("./apis/v1/routes/getalltokens");
-const getatoken = require("./apis/v1/routes/getatoken");
 const login = require("./apis/v1/routes/login");
 const deleteuser = require("./apis/v1/routes/deleteuser");
 const istokenvalid = require("./apis/v1/routes/istokenvalid");
@@ -59,12 +57,6 @@ amqp.connect("amqp://localhost", function (error0, connection) {
           break;
         case "getauser":
           getauser(channel, msg);
-          break;
-        case "getalltokens":
-          getalltokens(channel, msg);
-          break;
-        case "getatoken":
-          getatoken(channel, msg);
           break;
         case "istokenvalid":
           istokenvalid(channel, msg);
