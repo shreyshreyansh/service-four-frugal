@@ -5,6 +5,7 @@ var amqp = require("amqplib/callback_api");
 //functions
 const registeruser = require("./apis/v1/routes/registeruser");
 const registerdevice = require("./apis/v1/routes/registerdevice");
+const recharge = require("./apis/v1/routes/recharge");
 const getallusers = require("./apis/v1/routes/getallusers");
 const getauser = require("./apis/v1/routes/getauser");
 const getadevice = require("./apis/v1/routes/getadevice");
@@ -70,6 +71,9 @@ amqp.connect("amqp://localhost", function (error0, connection) {
           break;
         case "getdevice":
           getadevice(channel, msg);
+          break;
+        case "recharge":
+          recharge(channel, msg);
           break;
         case "istokenvalid":
           istokenvalid(channel, msg);
