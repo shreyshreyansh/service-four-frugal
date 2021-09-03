@@ -10,10 +10,15 @@ const getuserdevices = (channel, msg, jsondata) => {
     authorization.includes(jsondata.role) ||
     jsondata.userid === content.userid
   ) {
+    var role = content.role === "adminClient" ? "userClient" : "userFlip";
+    if (content.role === "userClient" || content.role === "adminClient")
+      role = "userClient";
+    else if (content.role === "userFlip" || content.role === "adminFlip")
+      role = "userFlip";
     // get all the users from the db
     pool.query(
-      "SELECT * FROM devicedata where userid = $1",
-      [content.userid],
+      "SELECT * FROM devicedata where userid = $1 AND role = $2",
+      [content.userid, role],
       (err, result) => {
         if (err) {
           // send the result to the queue
