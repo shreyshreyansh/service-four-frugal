@@ -1,7 +1,7 @@
 const e = require("express");
 const pool = require("../database/model/connect");
 const req = require("../functions/request");
-const authorization = ["adminClient", "adminFlip"];
+const authorization = ["adminClient"];
 module.exports = (channel, msg) => req(channel, msg, recharge);
 
 const nextRechargeDate = (num, date) => {
@@ -18,9 +18,10 @@ const recharge = (channel, msg, jsondata) => {
     authorization.includes(jsondata.role) ||
     (jsondata.role == "userClient" && jsondata.userid == content.userid)
   ) {
+    if (role === "adminClient") role = "userClient";
     pool.query(
-      "SELECT userid, nextrecharge FROM devicedata where deviceid = $1",
-      [content.deviceID],
+      "SELECT userid, nextrecharge FROM devicedata where deviceid = $1 AND role = $2",
+      [content.deviceID, role],
       (err, result) => {
         if (err) {
           const r = { status: err };
